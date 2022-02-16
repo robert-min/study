@@ -20,4 +20,4 @@ dates = filtered_lines.map(lambda x: x.split(",")[3].split(" ")[0])
 result = dates.countByValue()
 
 # CSV로 결과 저장
-pd.Series(result, name='trips').to_csv("trip_data.csv")
+pd.Series(result, name='trips').to_csv("data/trip_data.csv")
