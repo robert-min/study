@@ -1,2 +1,3 @@
 data_engineering/spark_review/data/
 /data_engineering/spark_review/data/taxi/
+data_engineering/airflow_review/data/trips
