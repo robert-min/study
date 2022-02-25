@@ -11,6 +11,6 @@ stream_settings = EnvironmentSettings.new_instance().in_streaming_mode()\
                                     .use_blink_planner().build()
 stream_table_env = TableEnvironment.create(stream_settings)
 
-# datastream enviroment
+# datastream environment
 datastream_env = StreamExecutionEnvironment.get_execution_environment()
 table_env = StreamTableEnvironment.create(datastream_env)

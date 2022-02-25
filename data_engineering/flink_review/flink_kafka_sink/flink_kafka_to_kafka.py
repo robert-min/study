@@ -10,7 +10,7 @@ env.enable_checkpointing(1000)
 env.get_checkpoint_config().set_max_concurrent_checkpoints(1)
 
 kafka_jar_path = os.path.join(
-    os.path.abspath(os.path.dirname(__file__)), "../flink_kafka",
+    os.path.abspath(os.path.dirname(__file__)), "../",
     "flink-sql-connector-kafka_2.11-1.14.3.jar"
 )
 env.add_jars(f"file://{kafka_jar_path}")
@@ -26,10 +26,10 @@ kafka_consumer = FlinkKafkaConsumer(
 )
 
 out_schema = SimpleStringSchema()
-kafka_producer = FlinkKafkaConsumer(
-    topics="example-destination",
-    deserialization_schema=out_schema,
-    properties={
+kafka_producer = FlinkKafkaProducer(
+    topic="example-destination",
+    serialization_schema=out_schema,
+    producer_config={
         "bootstrap.servers": "localhost:9092",
     }
 )

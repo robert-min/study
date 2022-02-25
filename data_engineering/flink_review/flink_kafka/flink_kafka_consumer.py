@@ -14,7 +14,7 @@ t_env = StreamTableEnvironment.create(env)
 # apache kafka SQL Connector
 kafka_jar_path = os.path.join(
     os.path.abspath(os.path.dirname(__file__)), "./",
-    "flink-sql-connector-kafka_2.11-1.14.3.jar"
+    "../flink-sql-connector-kafka_2.11-1.14.3.jar"
 )
 t_env.get_config().get_configuration().set_string(
     "pipeline.jars", f"file://{kafka_jar_path}"
