@@ -3,3 +3,4 @@ data_engineering/spark_review/data/
 /data_engineering/airflow_review/data/
 /data_engineering/kafka_review/data/
 /data_engineering/flink_review/flink_kafka/data/
+/data_engineering/flink_review/table_api/trips/
