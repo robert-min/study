@@ -1,37 +1,65 @@
-import heapq
-def dijkstra(start):
-    heap_data = list()
-    heapq.heappush(heap_data, (0, start))
-    distances[start] = 0
-    while heap_data:
-        dist, now = heapq.heappop(heap_data)
-        if distances[now] < dist:
-            continue
+import math
+import sys
+input = sys.stdin.readline
 
-        for i in adj[now]:
-            cost = dist + i[1]
-            if distances[i[0]] > cost:
-                distances[i[0]] = cost
-                heapq.heappush(heap_data, (cost, i[0]))
+def get_distance(p1, p2):
+    a = p1[0] - p2[0]
+    b = p1[1] - p2[1]
+    return math.sqrt((a * a) + (b * b))
 
-for _ in range(int(input())):
-    n, d, start = map(int, input().split())
-    adj = [[] for _ in range(n + 1)]
-    distances = [1e9] * (n + 1)
+def get_parent(parent, n):
+    if parent[n] == n:
+        return n
+    return get_parent(parent, parent[n])
 
-    for _ in range(d):
-        x, y, cost = map(int, input().split())
-        adj[y].append((x, cost))
+def union_parent(parent, a, b):
+    a = get_parent(parent, a)
+    b = get_parent(parent, b)
+    if a < b:
+        parent[b] = a
+    else:
+        parent[a] = b
 
-    dijkstra(start)
+def find_parent(parent, a, b):
+    a = get_parent(parent, a)
+    b = get_parent(parent, b)
+    if a == b:
+        return True
+    else:
+        return False
 
-    # 출력
-    count = 0
-    max_distance = 0
-    for i in distances:
-        if i != 1e9:
-            count += 1
-            if i > max_distance:
-                max_distance = i
+parent = dict()
+edges, locations = list(), list()
 
-    print(count, max_distance)
+n, m = map(int, input().split())
+for _ in range(n):
+    x, y = map(int, input().split())
+    locations.append((x, y))
+
+length = len(locations)
+
+# 각 신과의 거리 그래프 만들기
+for i in range(length - 1):
+    for j in range(i + 1, length):
+        edges.append((i + 1, j + 1, get_distance(locations[i], locations[j])))
+
+# 부모 초기화
+for i in range(1, n + 1):
+    parent[i] = i
+
+# 이미 연결된 신
+for i in range(m):
+    a, b = map(int, input().split())
+    union_parent(parent, a, b)
+
+# edges 정렬
+edges.sort(key=lambda data: data[2])
+
+# 결과 출력
+result = 0
+for a, b, cost in edges:
+    if not find_parent(parent, a, b):
+        union_parent(parent, a, b)
+        result += cost
+
+print("%0.2f" % result)
