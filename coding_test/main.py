@@ -1,31 +1,53 @@
-n = int(input())
-array = list()
-array.append((0, 0,0, 0))
+# 대기실마다 확인하면서 "P"인 곳에서 bfs 호출
+# bfs 함수에서 좌표 및 거리를 큐에 넣음
+## 거리가 2 미만이고 다음 방문할 곳이 "O"라면 큐에 넣음
+## 거리가 2 미만이고 다음 방문할 곳이 "P"라면 False
+## 거리가 2면 중지
+from collections import deque
 
-for i in range(1, n + 1):
-    area, height, weight = map(int, input().split())
-    array.append((i, area, height, weight))
+dx = [-1, 1, 0, 0]
+dy = [0, 0, -1, 1]
+def bfs(array, x, y):
+    visited = [[False] * 5 for _ in range(5)]
+    q = deque()
+    q.append((x, y, 0))
+    visited[x][y] = True
+    while q:
+        x, y, cost = q.popleft()
+        if cost == 2:
+            continue
+        for i in range(4):
+            nx = x + dx[i]
+            ny = y + dy[i]
+            if 0 <= nx < 5 and 0 <= ny < 5:
+                if visited[nx][ny]:
+                    continue
+                if array[nx][ny] == "P":
+                    return False
+                if array[nx][ny] == "O":
+                    q.append((nx, ny, cost + 1))
+                    visited[nx][ny] = True
+    return True
 
-# 무게 기준으로 정렬
-array.sort(key=lambda x : x[3])
+def solution(places):
+    answer = []
 
-# 높이 저장
-dp = [0] * (n + 1)
-for i in range(1, n + 1):
-    for j in range(0, i):
-        if array[i][1] > array[j][1]:
-            dp[i] = max(dp[i], dp[j] + array[i][2])
+    for place in places:
+        array = [list(place[i]) for i in range(5)]
+        flag = True
 
-# 역추적
-max_value = max(dp)
-index = n
-result = list()
-while index != 0:
-    if max_value == dp[index]:
-        result.append(array[index][0])
-        max_value -= array[index][2]
-    index -= 1
+        for i in range(5):
+            for j in range(5):
+                if array[i][j] == "P":
+                    if not bfs(array, i, j):
+                        flag = False
+            if not flag:
+                break
 
-result.reverse()
-print(len(result))
-[print(i) for i in result]
+        if flag:
+            answer.append(1)
+        else:
+            answer.append(0)
+
+    return answer
+
