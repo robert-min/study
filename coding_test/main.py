@@ -1,11 +1,30 @@
-n = int(input())
-s = input()
+def check(N, candy):
+    for i in range(N):
+        if candy[i] % 2 == 1:
+            candy[i] += 1
+    return len(set(candy)) == 1
 
-result, bonus = 0, 0
-for idx, answer in enumerate(s):
-    if answer == "O":
-        result, bonus = result + idx + 1 + bonus, bonus + 1
-    else:
-        bonus = 0
-print(result)
+def teacher(N, candy):
+    tmp_list = [0 for i in range(N)]
+    for idx in range(N):
+        if candy[idx] % 2 :
+            candy[idx] += 1
+        candy[idx] //= 2
+        tmp_list[(idx+1) % N] = candy[idx]
+
+    for idx in range(N):
+        candy[idx] += tmp_list[idx]
+    return candy
+
+def process():
+    N, candy = int(input()), list(map(int, input().split()))
+    count = 0
+    while not check(N, candy):
+        count += 1
+        candy = teacher(N, candy)
+    print(count)
+
+
+for _ in range(int(input())):
+    process()
 
