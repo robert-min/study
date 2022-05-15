@@ -1,71 +1,76 @@
-dx = [-1, 1, 0, 0]
-dy = [0, 0, -1, 1]
+import sys
+sys.setrecursionlimit(10000)
+input = sys.stdin.readline
 
-# 각 지점당 꽃심을 때 비용
-def count_bill(x, y):
-    temp = map_bill[x][y]
-    for i in range(4):
-        nx = x + dx[i]
-        ny = y + dy[i]
-        if nx < 0 or nx >= N or ny < 0 or ny >= N:
-            pass
-        else:
-            temp += map_bill[nx][ny]
-    bill_result[x][y] = temp
-    return temp
+# dfs
+dx, dy = [-1, 1, 0, 0], [0, 0, -1, 1]
 
-# 꽃 심음
-def plant(x, y):
-    bill_result[x][y] = False
-    for i in range(4):
-        nx = x + dx[i]
-        ny = y + dy[i]
-        if nx < 0 or nx >= N or ny < 0 or ny >= N:
-            pass
-        else:
-            bill_result[nx][ny] = False
 
-def check(x, y):
-    flag = True
-    if not bill_result[x][y]:
-        flag =  False
+def dfs(x, y):
+    visited[x][y] = True
+    ret = 1
     for i in range(4):
-        nx = x + dx[i]
-        ny = y + dy[i]
-        if nx < 0 or nx >= N or ny < 0 or ny >= N:
-            pass
-        else:
-            if not bill_result[nx][ny]:
-                flag = False
-    return flag
+        nx, ny = x + dx[i], y + dy[i]
+        if nx < 0 or nx >= N or ny < 0 or ny >= 10:
+            continue
+        if visited[nx][ny] or M[x][y] != M[nx][ny]:
+            continue
+        ret += dfs(nx, ny)
+    return ret
+
+
+def dfs2(x, y, val):
+    visited2[x][y] = True
+    M[x][y] = "0"
+    for i in range(4):
+        nx, ny = x + dx[i], y + dy[i]
+        if nx < 0 or nx >= N or ny < 0 or ny >= 10:
+            continue
+        if visited2[nx][ny] or M[nx][ny] != val:
+            continue
+        dfs2(nx, ny, val)
+
+
+def down():
+    for i in range(10):
+        tmp = []
+        for j in range(N):
+            if M[j][i] != "0":
+                tmp.append(M[j][i])
+        for j in range(N - len(tmp)):
+            M[j][i] = "0"
+        for j in range(N - len(tmp), N):
+            M[j][i] = tmp[j - (N - len(tmp))]
+
+
+def new_array(N):
+    return [[False] * 10 for _ in range(N)]
+
 
 # 입력
-N = int(input())
-map_bill = list()
-for _ in range(N):
-    map_bill.append(list(map(int, input().split())))
+N, K = map(int, input().split())
+M = [list(input()) for _ in range(N)]
+visited = new_array(N)
+visited2 = new_array(N)
 
-bill_result = [[0] * N for i in range(N)]
+while True:
+    exist = False
+    visited = new_array(N)
+    visited2 = new_array(N)
+    for i in range(N):
+        for j in range(10):
+            if M[i][j] == "0" or visited[i][j]:
+                continue
+            res = dfs(i, j) # 개수 세기
+            print(res, M[i][j])
+            if res >= K:
+                dfs2(i, j, M[i][j])  # 지우기
+                exist = True
 
+    if not exist:
+        break
+    down()
 
-
-# 3회 반복(이미 심은 지점 False 처리)
-result = 0
-for _ in range(3):
-    min_value = 201
-    min_x, min_y = 0, 0
-    # 모든 지점 확인
-    for j in range(N):
-        for k in range(N):
-            value = count_bill(j, k)
-            if value < min_value and check(j, k):
-                min_value = min(min_value, value)
-                min_x, min_y = j, k
-
-    print(min_value)
-    # 꽃 심음
-    result += min_value
-    plant(min_x, min_y)
-
-# 출력
-print(result)
+for i in M:
+    i = i[:-1]
+    print("".join(i))
