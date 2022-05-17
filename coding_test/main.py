@@ -1,76 +1,35 @@
-import sys
-sys.setrecursionlimit(10000)
-input = sys.stdin.readline
+from copy import deepcopy
 
-# dfs
-dx, dy = [-1, 1, 0, 0], [0, 0, -1, 1]
+# 입력
+N = int(input())
+Board = [list(map(int, input().split())) for i in range(N)]
 
+def rotate90(B, N):
+    NB = deepcopy(B)
+    for i in range(N):
+        for j in range(N):
+            NB[j][N-i-1] = B[i][j]  # 90도 회전
+    return NB
 
-def dfs(x, y):
-    visited[x][y] = True
-    ret = 1
-    for i in range(4):
-        nx, ny = x + dx[i], y + dy[i]
-        if nx < 0 or nx >= N or ny < 0 or ny >= 10:
-            continue
-        if visited[nx][ny] or M[x][y] != M[nx][ny]:
-            continue
-        ret += dfs(nx, ny)
+def convert(lst, N):
+    new_list = [i for i in lst if i]
+    for i in range(1, len(new_list)):
+        if new_list[i-1] == new_list[i]:
+            new_list[i -1] *= 2
+            new_list[i] = 0
+    new_list = [i for i in new_list if i]
+    return new_list + [0] * (N-len(new_list))
+
+def dfs(N, B, count):
+    ret = max([max(i) for i in B])
+    if count == 0:
+        return ret
+    for _ in range(4):
+        X = [convert(i, N) for i in B]
+        if X != B:
+            ret = max(ret, dfs(N, X, count - 1))
+        B = rotate90(B, N)
     return ret
 
 
-def dfs2(x, y, val):
-    visited2[x][y] = True
-    M[x][y] = "0"
-    for i in range(4):
-        nx, ny = x + dx[i], y + dy[i]
-        if nx < 0 or nx >= N or ny < 0 or ny >= 10:
-            continue
-        if visited2[nx][ny] or M[nx][ny] != val:
-            continue
-        dfs2(nx, ny, val)
-
-
-def down():
-    for i in range(10):
-        tmp = []
-        for j in range(N):
-            if M[j][i] != "0":
-                tmp.append(M[j][i])
-        for j in range(N - len(tmp)):
-            M[j][i] = "0"
-        for j in range(N - len(tmp), N):
-            M[j][i] = tmp[j - (N - len(tmp))]
-
-
-def new_array(N):
-    return [[False] * 10 for _ in range(N)]
-
-
-# 입력
-N, K = map(int, input().split())
-M = [list(input()) for _ in range(N)]
-visited = new_array(N)
-visited2 = new_array(N)
-
-while True:
-    exist = False
-    visited = new_array(N)
-    visited2 = new_array(N)
-    for i in range(N):
-        for j in range(10):
-            if M[i][j] == "0" or visited[i][j]:
-                continue
-            res = dfs(i, j) # 개수 세기
-            print(res, M[i][j])
-            if res >= K:
-                dfs2(i, j, M[i][j])  # 지우기
-                exist = True
-
-    if not exist:
-        break
-    down()
-
-for i in M:
-    i = i[:-1]
-    print("".join(i))
+print(dfs(N, Board, 5))
