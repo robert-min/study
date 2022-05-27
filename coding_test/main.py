@@ -1,34 +1,37 @@
-def solution(answers):
-    first_count, second_count, third_count = 0, 0, 0
-    # 수포자 답 10000개 이상
-    first = [1, 2, 3, 4, 5]
-    second = [2, 1, 2, 3, 2, 4, 2, 5]
-    third = [3, 3, 1, 1, 2, 2, 4, 4, 5, 5]
-    # 문제 수 체크
-    for idx, ans in enumerate(answers):
-        if ans == first[idx % 5]:
-            first_count += 1
-        if ans == second[idx % 8]:
-            second_count += 1
-        if ans == third[idx % 10]:
-            third_count += 1
+from collections import deque
 
-    count_dict = {1: first_count, 2:second_count, 3:third_count}
+def bfs(begin, target, words, visited):
+    queue = deque()
+    queue.append((begin, 0))
+    while queue:
+        cur, depth = queue.popleft()
 
-    max_score = max(count_dict.values())
-    result = [idx for idx, v in count_dict.items() if v == max_score]
+        if cur == target:
+            return depth
 
-    # # 중복 없는 경우
-    # if len(set(count)) == len(count):
-    #     result.append(count.index(max(count)))
-    # # 중복 있는 경우
-    # else:
-    #     temp = max(count)
-    #     for idx, i in enumerate(count):
-    #         if i == temp:
-    #             result.append(idx + 1)
+        for i in range(len(words)):
+            if visited[i] == True:
+                continue
+            count = 0
+            # 단어를 하나씩 뽑아내서 비교
+            for a, b in zip(cur, words[i]):
+                if a != b:
+                    count += 1
+            # 단어가 하나가 같은 경우만 계속 탐색(하나만 바꿀 수 있다고 함)
+            if count == 1:
+                visited[i] = True
+                queue.append((words[i], depth + 1))
 
-    # 최대 값 출력
-    return result
 
-print(solution([1,3,2,4,2]))
+def solution(begin, target, words):
+    answer = 0
+    # target이 words에 없는 경우 return 0
+    if target not in words:
+        return 0
+    # 현재 단어와 한글자 차이가 있는 단어 선택해서 저장
+    visited = [False] * (len(words))
+    answer = bfs(begin, target, words, visited)
+
+    return answer
+
+print(solution("hit", "cog", ["hot", "dot", "dog", "lot", "log", "cog"]))
