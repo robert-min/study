@@ -1,37 +1,35 @@
 from collections import deque
+# bfs
+def bfs(start, adj, visited):
+    q = deque()
+    q.append(start)
+    while q:
+        cur = q.popleft()
+        for i in adj[cur]:
+            if visited[i] == 0:
+                q.append(i)
+                visited[i] = visited[cur]+1
 
-def bfs(begin, target, words, visited):
-    queue = deque()
-    queue.append((begin, 0))
-    while queue:
-        cur, depth = queue.popleft()
-
-        if cur == target:
-            return depth
-
-        for i in range(len(words)):
-            if visited[i] == True:
-                continue
-            count = 0
-            # 단어를 하나씩 뽑아내서 비교
-            for a, b in zip(cur, words[i]):
-                if a != b:
-                    count += 1
-            # 단어가 하나가 같은 경우만 계속 탐색(하나만 바꿀 수 있다고 함)
-            if count == 1:
-                visited[i] = True
-                queue.append((words[i], depth + 1))
-
-
-def solution(begin, target, words):
+def solution(n, edge):
     answer = 0
-    # target이 words에 없는 경우 return 0
-    if target not in words:
-        return 0
-    # 현재 단어와 한글자 차이가 있는 단어 선택해서 저장
-    visited = [False] * (len(words))
-    answer = bfs(begin, target, words, visited)
 
+    # 간선 저장
+    adj = [[] for _ in range(n + 1)]
+    for e in edge:
+        a, b = e[0], e[1]
+        adj[a].append(b)
+        adj[b].append(a)
+
+    # 1번노드부터 탐색
+    # bfs
+    visited = [0 for _ in range(n + 1)]
+    bfs(1, adj, visited)
+    max_e = max(visited)
+    for v in visited[2:]:
+        if v == max_e:
+            answer +=1
+
+    # visited 값이 max인거의 개수가 answer
     return answer
 
-print(solution("hit", "cog", ["hot", "dot", "dog", "lot", "log", "cog"]))
+print(solution(6, [[3, 6], [4, 3], [3, 2], [1, 3], [1, 2], [2, 4], [5, 2]]))
