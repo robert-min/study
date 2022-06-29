@@ -1,30 +1,39 @@
-from collections import defaultdict
+def check(alp):
+    temp = ord(alp) - 65
+    if temp < 14:
+        return temp
+    else:
+        return 26 - temp
 
-def solution(genres, plays):
-    answer = []
-    new_lst = defaultdict(list)
-    ord_lst = defaultdict(int)
-    idx = 0
+def solution(name):
+    answer = 0
+    # name -> list
+    name_lst = list(name)
 
-    # 장르별로 재생횟수 합 기준으로 정리
-    for g, p in zip(genres, plays):
-        new_lst[g].append((p, idx))
-        ord_lst[g] += p
-        idx += 1
+    # 예외 : 첫번째 오른쪽이 "A"일 경우 리스트 reverse
+    first = name_lst[0]
+    name_lst = name_lst[1:]
 
-    order = sorted(ord_lst.keys(), reverse=True)
+    if name_lst[0] == "A":
+        name_lst.reverse()
 
-    # 장르 내에서 가장 많이 재생한 노래 저장
-    for o in order:
-        temp = sorted(new_lst[o], key=lambda x: x[0], reverse=True)
-        count = 0
-        for i in temp:
-            answer.append(i[1])
-            count += 1
-            if count == 2: break
+    # 마지막 자리가 "A"인 경우 확인할 필요가 없음
+    while name_lst[-1] == "A":
+        name_lst = name_lst[:-1]
 
-    # 재생횟수가 같을 때 고유번호가 낮은 값
+    answer += check(first)
+
+
+
+    # 모든 자리 확인
+    for i in name_lst:
+        answer += 1
+        if i == "A":
+            pass
+        else:
+            answer += check(i)
+
 
     return answer
 
-print(solution(["classic", "pop", "classic", "classic", "pop"], [500, 600, 150, 800, 2500]))
+print(solution("JAN"))
